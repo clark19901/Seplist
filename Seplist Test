@@ -48,7 +48,7 @@ int main()
 int e;
 int M[10]={1,2,3,4,5,3,2,1,4,5};
 	InitList(L);
-printf("正在初始化顺序表L... \n");
+printf("初始化顺序表L完成\n");
 printf("检测到现在顺序表有%d个值\n",L.length+1);
 	 for(int i=0;i<10;i++)
 InsertList(L,i ,M[i]);
