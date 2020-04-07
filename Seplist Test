@@ -2,60 +2,69 @@
 #include <stdlib.h>
 
 const int OK=1;
+const int ERROR=0;
 const int maxmum_size=100;
-const int OVERFLOW=-2;
 typedef int Elemtype;
 typedef struct{
 Elemtype Data[maxmum_size];
-int length;
+int last;
 }List;
 
 int InitList(List &L)
-{L.length = -1;
+{L.last = 0;
 return OK;
 }
 
-bool EmptyList(List L)
-{if(L.length==-1) return true;
+bool ListEmpty(List L)
+{if(L.last==-1) return true;
 else return false;}
 
-int GetItem(List L ,int i ,int &e)
-{if(i<0&&i>L.length-1) exit(-1);   //exit需要调用stdlib.h
+bool ListFull(List L)
+{if(L.last==maxmum_size-1) return true;
+else return false;}
+
+int Listlast(List L)
+{return L.last+1;}
+
+int GetItem(List L ,int i ,int &e) //给出位置查数据     还有一个函数是给出数据查位置
+{if(i<0||i>L.last) exit(-1);   //exit需要调用stdlib.h
 else return e=L.Data[i];}
 
+
 void InsertList(List &L,int i ,int e)
-{int count=L.length;
-if(i<0&&i>L.length+1) exit(-1); 
-else if((L.length)>maxmum_size) exit(OVERFLOW);
+{int count=L.last;
+if(i<0||i>L.last) exit(-1); 
+else if(ListFull(L)) exit(-1);
 else{while(count>i)
 {L.Data[count+1]=L.Data[count];
 count--;}}
 L.Data[i]=e;
-L.length ++;}
+L.last ++;}
 
 int DeleteList(List &L,int i,int e)
 {int count=i;
-if(i<0&&i>L.length) exit(-1); 
-else if(EmptyList(L)) exit(OVERFLOW);
+if(i<0||i>L.last-1) return ERROR;
+else if(ListEmpty(L)) return ERROR;
 else{e=L.Data[i];
-while(count<L.length)
+while(count<L.last-1)
 {L.Data[i]=L.Data[i+1];count++;}}
-L.length--;return e;}
+L.last--;return e;}
 
 
 int main()
 {	List L;
 int e;
 int M[10]={1,2,3,4,5,3,2,1,4,5};
-	InitList(L);
-printf("初始化顺序表L完成\n");
-printf("检测到现在顺序表有%d个值\n",L.length+1);
-	 for(int i=0;i<10;i++)
+InitList(L);
+printf("正在初始化顺序表L... \n");
+printf("检测到现在顺序表有%d个值\n",L.last+1);
+for(int i=0;i<10;i++)
 InsertList(L,i ,M[i]);
 printf("依次插入顺序表：");
 for(int i=0;i<10;i++)
-printf("%5d",L.Data[i]);
-printf("\n检测到现在顺序表有%d个值\n",L.length+1);
+printf("%6d",L.Data[i]);
+printf("\n检测到现在顺序表有%d个值\n",L.last+1);
+
 GetItem(L ,5 ,e);
 printf("GetItem(L ,5 ,e) e=%d\n",e);
 
@@ -63,5 +72,11 @@ DeleteList(L,5,e);
 printf("DeleteList(L,5,e) e=%d\n",e);
 GetItem(L ,5 ,e);
 printf("GetItem(L ,5 ,e) e=%d\n",e);
-printf("现在顺序表有%d个值\n",L.length+1);
-return 0;}
+printf("现在顺序表有%d个值\n",L.last+1);
+return OK;}
+
+//综合运行结果可知 函数InsertList(List &L,int i ,int e) 和 DeleteList(List &L,int i,int e)
+//的时间复杂度为O（n） 这表明顺序表随着其长度的增加,运行插入和删除运行速度会越来越慢 效率低  
+// 函数ListEmpty(List L) bool ListFull(List L)  int GetItem(List L ,int i ,int &e) 时间复杂度恒定为O(1) 因此读取数据元素速度快
+//顺表表适合应用于插入删除次数较少，读取数据次数较多的程序中  因顺序表使用的是数组存储数据，其数据元素前驱和后继在存储位置上一定相邻 
+//因maxmum_size的大小被提前设定好，因此没提前设定好合适的maxmum_size容量数值会导致数据溢出或浪费了一定的存储空间
