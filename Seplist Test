@@ -11,8 +11,15 @@ int last;
 }List;
 
 int InitList(List &L)
-{L.last = 0;
+{L.last = -1;
 return OK;
+}
+
+void CreatList(List &L,int n)
+{
+for(int i=0;i<n;i++)
+L.Data[i]=2*i;
+L.last=n-1;
 }
 
 bool ListEmpty(List L)
@@ -24,56 +31,72 @@ bool ListFull(List L)
 else return false;}
 
 int Listlast(List L)
-{return L.last+1;}
+{return L.last;}
 
-int GetItem(List L ,int i ,int &e) //给出位置查数据     还有一个函数是给出数据查位置
+int GetItem(List L ,int i) //给出位置查数据     还有一个函数是给出数据查位置
 {if(i<0||i>L.last) exit(-1);   //exit需要调用stdlib.h
-else return e=L.Data[i];}
+else return L.Data[i];}
+
+int LocateElem(List L,int e)
+{for(int i=0;i<=L.last;i++)
+if(L.Data[i]==e) return i;
+return -1;
+}
 
 
 void InsertList(List &L,int i ,int e)
 {int count=L.last;
-if(i<0||i>L.last) exit(-1); 
+if(i<0||L.last>=maxmum_size) exit(-1); 
 else if(ListFull(L)) exit(-1);
-else{while(count>i)
+else{while(count>=i)
 {L.Data[count+1]=L.Data[count];
 count--;}}
 L.Data[i]=e;
 L.last ++;}
 
-int DeleteList(List &L,int i,int e)
-{int count=i;
-if(i<0||i>L.last-1) return ERROR;
+int DeleteList(List &L,int i)  //执行 return  后面的语句不会执行
+{int e;
+if(i<0||i>L.last) return ERROR;
 else if(ListEmpty(L)) return ERROR;
-else{e=L.Data[i];
-while(count<L.last-1)
-{L.Data[i]=L.Data[i+1];count++;}}
-L.last--;return e;}
+else
+{e =L.Data[i];
+for(int count=i;count<L.last;count++)
+L.Data[count]=L.Data[count+1];}
+L.last--;
+return e;}  
+
+int PrintList(List L)
+{if(ListEmpty(L)) return ERROR;
+for(int i=0; i<L.last;i++)
+printf("%6d",L.Data[i]);
+printf("\n");}
 
 
 int main()
-{	List L;
-int e;
-int M[10]={1,2,3,4,5,3,2,1,4,5};
+{
+List L;
 InitList(L);
-printf("正在初始化顺序表L... \n");
-printf("检测到现在顺序表有%d个值\n",L.last+1);
-for(int i=0;i<10;i++)
-InsertList(L,i ,M[i]);
-printf("依次插入顺序表：");
-for(int i=0;i<10;i++)
-printf("%6d",L.Data[i]);
-printf("\n检测到现在顺序表有%d个值\n",L.last+1);
 
-GetItem(L ,5 ,e);
-printf("GetItem(L ,5 ,e) e=%d\n",e);
+ CreatList(L,10); //导入另一组数据
+ PrintList( L);
+printf("LocateElem(L,14) i=%d\n",LocateElem(L,14));
 
-DeleteList(L,5,e);
-printf("DeleteList(L,5,e) e=%d\n",e);
-GetItem(L ,5 ,e);
-printf("GetItem(L ,5 ,e) e=%d\n",e);
+
+InsertList(L,5 ,20);
+printf("执行InsertList(L,8 ,20)\n ");
+PrintList( L);
+
+
+printf("DeleteList(L,6) e=%d\n",DeleteList(L,6));
+PrintList( L);
+
+printf("LocateElem(L,6) i=%d\n",LocateElem(L,6));
+
+
+printf("GetItem(L ,7 ,e) e=%d\n",GetItem(L ,7));
 printf("现在顺序表有%d个值\n",L.last+1);
-return OK;}
+PrintList(L);
+return 0;}
 
 //综合运行结果可知 函数InsertList(List &L,int i ,int e) 和 DeleteList(List &L,int i,int e)
 //的时间复杂度为O（n） 这表明顺序表随着其长度的增加,运行插入和删除运行速度会越来越慢 效率低  
