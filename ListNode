@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+const int OK=1;
+const int ERROR=0;
+
+typedef int Elemtype;
+typedef struct Node{
+Elemtype data;
+struct Node *next;
+}ListNode,*LinkList;
+LinkList L;
+
+void InitList(LinkList *head)  //因为要用到new ListNode申请空间  LinkList *head 的指针需要转换和ListNode相匹配  head = &L（指针数值的地址）  指针变量L加&取地址  其他函数可直接操作
+
+{if((*head= new ListNode) ==NULL) exit(-1);
+(*head)->next=NULL;}
+
+
+bool ListEmpty(LinkList head)
+{if(head->next==NULL) return true;
+else return false;}
+
+
+Elemtype Locate(LinkList head,int i)
+{if(i<0) return ERROR;
+if(ListEmpty(head))return ERROR;
+int count=0;
+ListNode *p=head;
+while(p!=NULL && count<=i)
+{p=p->next;count++;
+}
+if(p->data) return p->data;
+else return NULL;
+}
+
+ListNode *GetItem(LinkList head,Elemtype e)
+{ListNode *p=head->next;
+while(p)
+{if(p->data==e)return  p;
+else p=p->next;}
+return NULL;}
+
+int InsertList(LinkList head,int i ,int e)
+{ListNode *p,*pre;
+pre=head;
+int count=0;
+while (pre->next!=NULL&&count<=i-1)
+{pre=pre->next;count++;}
+if ((p=new ListNode)==NULL) exit(-1);
+p->data=e;
+//p=pre->next; 错误点
+p->next=pre->next;
+pre->next=p;
+return OK;
+}
+
+int DeleteList(LinkList head,int i,Elemtype &e) 
+{ListNode *p,*pre;
+pre=head;
+if (ListEmpty(head)||i<0) return ERROR;
+int count=0;
+while (pre->next!=NULL&&count<=i-1)
+{pre=pre->next;count++;}
+p=pre->next;//注意先设定p为pre的后继节点再操作
+pre->next=p->next;   
+e=p->data;   //记录删除值到e
+delete p;
+return OK;
+}
+
+int ListLength(LinkList head)
+{
+ListNode *p=head;
+int count= 0;
+while(p->next!=NULL)
+{count++;p=p->next;}
+return count;}
+
+void DestroyList(LinkList head)
+{
+ListNode *p,*q;
+p=head;
+while(p!=NULL)
+{q=p;p=p->next;delete q;}
+}
+
+
+
+
+
+void PrintList(LinkList head)
+{ListNode *p=head->next;
+while(p!=NULL)
+{printf("%6d",p->data);
+p=p->next;}
+printf("\n");
+}
+
+
+int main()
+{
+
+InitList(&L);
+int a[]={1,2,3,4,5,6,7,8,9};
+for(int i=0;i<9;i++)
+InsertList(L,i,a[i]);
+PrintList(L);
+printf("现在链表有%d个元素\n",ListLength(L));
+
+InsertList(L,5,88);
+PrintList(L);
+printf("现在链表有%d个元素\n",ListLength(L));
+
+int e;
+DeleteList(L,8,e);
+PrintList(L);
+printf("现在链表有%d个元素\n",ListLength(L));
+
+printf("顺序链表的下标6的数据是%d\n",Locate(L,6));
+
+return 0;}
+
+//综合运行结果可知 查找第i个结点的数据需要的时间复杂度 O（n）  因此使用链表来查找结点数据所需的时间 和链表结点的个数成正比
+//插入和删除结点的时间复杂度为O（1）因此其删除和插入数据效率高
+//因为结点地址动态申请空间，因此线性表 前驱结点和后继结点在其存储位置上不一定相邻
+//链表适用于查找数据较少，删除和插入较多的程序中 且因为其动态申请空间，比较节省存储空间
